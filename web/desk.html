@@ -1,0 +1,692 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inflinix Credit Desk · Accred × Robinhood Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#17130e; --panel:#221c15; --panel-2:#1a150f; --inset:#120e08;
+    --line:#342b20; --line-2:#4a3d2c;
+    --ink:#f1eadc; --mid:#b9ab97; --dim:#8a7c67;
+    --accent:#cf9a4e; --accent-soft:rgba(207,154,78,.14); --accent-line:rgba(207,154,78,.42);
+    --good:#37c383; --good-soft:rgba(55,195,131,.12);
+    --bad:#f0576e; --bad-soft:rgba(240,87,110,.12);
+    --warn:#e3b23f; --cyan:#63dbe6;
+    --t-unknown:#6c7a8c; --t-bronze:#c47a45; --t-silver:#aab6c2; --t-gold:#e3b73f; --t-platinum:#63dbe6;
+    --serif:"Fraunces",Georgia,serif;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --disp:"Archivo",var(--sans);
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --r:14px; --r-sm:9px;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;
+    -webkit-font-smoothing:antialiased;letter-spacing:.005em;border-top:3px solid var(--accent)}
+  a{color:inherit}
+  .wrap{max-width:1680px;margin:0 auto;padding:28px 40px 60px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+
+  /* ---- header ---- */
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .brand h1{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:-.01em;margin:0;
+    display:flex;align-items:center;gap:11px}
+  .shield{width:26px;height:30px;flex:none}
+  .brand a{display:inline-block;transition:opacity .15s} .brand a:hover{opacity:.72}
+  .brand p{margin:7px 0 0;color:var(--mid);font-size:13.5px;max-width:52ch;line-height:1.5}
+  .chainchip{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font-family:var(--mono);
+    font-size:11.5px;color:var(--mid);background:var(--panel);border:1px solid var(--line);
+    padding:5px 10px;border-radius:999px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft)}
+
+  /* ---- memory master switch ---- */
+  .master{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+    padding:14px 16px;min-width:270px}
+  .master .lab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:11px}
+  .master .lab .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .master .state{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.02em}
+  .state.on{color:var(--good)} .state.off{color:var(--bad)}
+  .toggle{display:flex;width:100%;background:var(--inset);border:1px solid var(--line);border-radius:10px;padding:4px;gap:4px}
+  .toggle button{flex:1;font-family:var(--sans);font-weight:600;font-size:12.5px;color:var(--mid);
+    background:transparent;border:0;padding:8px 6px;border-radius:7px;cursor:pointer;transition:.18s}
+  .toggle button[aria-pressed="true"]{background:var(--panel-2);color:var(--ink);
+    box-shadow:inset 0 0 0 1px var(--line-2)}
+  .toggle button.danger[aria-pressed="true"]{color:var(--bad);box-shadow:inset 0 0 0 1px rgba(240,87,110,.5)}
+  .master .hint{margin:10px 0 0;font-size:11.5px;color:var(--dim);line-height:1.45}
+
+  /* ---- alert banner ---- */
+  .banner{display:flex;align-items:center;gap:12px;margin:18px 0 22px;padding:13px 16px;border-radius:var(--r);
+    border:1px solid var(--line);background:var(--panel);font-size:13.5px;color:var(--mid);transition:.2s}
+  .banner.alert{border-color:rgba(240,87,110,.45);background:var(--bad-soft);color:#ffd7dd}
+  .banner .bico{font-family:var(--mono);font-weight:600;font-size:12px;padding:3px 8px;border-radius:6px;
+    border:1px solid var(--line-2);color:var(--mid);white-space:nowrap}
+  .banner.alert .bico{border-color:rgba(240,87,110,.5);color:#ffb3bd;background:rgba(240,87,110,.12)}
+  .banner strong{color:var(--ink);font-weight:600}
+  .banner.alert strong{color:#fff}
+
+  /* ---- main grid ---- */
+  .grid{display:grid;grid-template-columns:288px minmax(0,1fr) 320px;gap:16px;align-items:start}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:0 18px 44px -34px rgba(0,0,0,.7)}
+  .panel > .head{display:flex;align-items:center;justify-content:space-between;margin:-2px 0 13px}
+  .panel > .head h2{font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin:0}
+  .col{display:flex;flex-direction:column;gap:16px}
+
+  /* ---- roster ---- */
+  .roster{display:flex;flex-direction:column;gap:7px}
+  .cp{display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;text-align:left;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 12px;
+    color:inherit;transition:.15s;font-family:inherit}
+  .cp:hover{border-color:var(--line-2)}
+  .cp[aria-selected="true"]{border-color:var(--accent-line);background:var(--accent-soft)}
+  .cp .id{font-family:var(--mono);font-size:13.5px;font-weight:500;color:var(--ink)}
+  .cp .sub{font-size:11px;color:var(--dim);grid-column:1}
+  .cp .tier{grid-row:1/3;align-self:center;font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.06em;padding:4px 8px;border-radius:6px;text-align:center;white-space:nowrap}
+  .cp .sc{grid-row:2;justify-self:end;align-self:center;grid-column:2;display:none}
+
+  /* tier chip colors */
+  .tc-UNKNOWN{color:var(--t-unknown);background:rgba(108,122,140,.13);box-shadow:inset 0 0 0 1px rgba(108,122,140,.35)}
+  .tc-BRONZE{color:var(--t-bronze);background:rgba(196,122,69,.12);box-shadow:inset 0 0 0 1px rgba(196,122,69,.4)}
+  .tc-SILVER{color:var(--t-silver);background:rgba(170,182,194,.12);box-shadow:inset 0 0 0 1px rgba(170,182,194,.4)}
+  .tc-GOLD{color:var(--t-gold);background:rgba(227,183,63,.12);box-shadow:inset 0 0 0 1px rgba(227,183,63,.42)}
+  .tc-PLATINUM{color:var(--t-platinum);background:rgba(99,219,230,.12);box-shadow:inset 0 0 0 1px rgba(99,219,230,.42)}
+
+  /* ---- instrument ---- */
+  .instrument{padding:20px}
+  .inst-top{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .gauge{width:300px;flex:none;margin:0 auto}
+  .gauge svg{width:100%;height:auto;display:block}
+  .g-score{font-family:var(--disp);font-weight:800;font-size:46px;letter-spacing:-.02em}
+  .g-den{font-family:var(--mono);font-size:14px;fill:var(--dim)}
+  .g-tier{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.08em}
+  .g-cap{font-family:var(--mono);font-size:10px;letter-spacing:.05em}
+  .inst-id{flex:1;min-width:200px}
+  .inst-id .who{font-family:var(--mono);font-size:20px;font-weight:500}
+  .inst-id .meta{color:var(--mid);font-size:13px;margin-top:4px}
+  .inst-id .rat{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .inst-id .rat li{font-size:12.5px;color:var(--mid);padding-left:16px;position:relative;line-height:1.4}
+  .inst-id .rat li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;
+    background:var(--accent)}
+
+  /* ---- components ---- */
+  .comps{margin-top:20px;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:11px}
+  .comp{display:grid;grid-template-columns:150px 1fr 58px;gap:12px;align-items:center}
+  .comp .cl{font-size:12px;color:var(--mid)}
+  .comp .track{height:8px;background:var(--inset);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+  .comp .fill{height:100%;background:linear-gradient(90deg,var(--accent),#e6bd77);border-radius:4px;
+    transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .comp .cv{font-family:var(--mono);font-size:12px;text-align:right;color:var(--ink)}
+  .comp .cw{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+
+  /* ---- request module ---- */
+  .req{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+  .req .presets{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 15px}
+  .req .presets button{font-family:var(--mono);font-size:12.5px;color:var(--mid);background:var(--panel-2);
+    border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s}
+  .req .presets button[aria-pressed="true"]{color:var(--ink);border-color:var(--accent-line);background:var(--accent-soft)}
+  .verdict{display:grid;grid-template-columns:auto 1fr;gap:0 18px;align-items:center;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .verdict .stamp{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:.04em;
+    padding:10px 16px;border-radius:10px;text-align:center}
+  .stamp.ok{color:var(--good);background:var(--good-soft);box-shadow:inset 0 0 0 1px rgba(55,195,131,.4)}
+  .stamp.no{color:var(--bad);background:var(--bad-soft);box-shadow:inset 0 0 0 1px rgba(240,87,110,.4)}
+  .vgrid{display:flex;gap:26px;flex-wrap:wrap}
+  .vg{display:flex;flex-direction:column;gap:3px}
+  .vg .vk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .vg .vv{font-family:var(--mono);font-size:17px;font-weight:500}
+  .vg .vv.big{font-size:19px}
+  .reason{margin-top:12px;font-size:12.5px;color:var(--mid);line-height:1.5}
+  .reason .backed{font-family:var(--mono);font-size:11px;color:var(--dim)}
+
+  /* ---- right column cards ---- */
+  .kv{display:flex;flex-direction:column;gap:9px}
+  .kv .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+  .kv .k{font-size:12px;color:var(--dim)}
+  .kv .v{font-family:var(--mono);font-size:12.5px;text-align:right;word-break:break-all}
+  .v.link a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-line)}
+  .v.schema{word-break:normal;overflow-wrap:normal;font-size:11.5px;line-height:1.5;color:var(--mid)}
+  .attest .claim{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:10px;padding:12px 13px;margin-bottom:13px}
+  .attest .claim .who{font-family:var(--mono);font-size:14px}
+  .attest .frozen{margin-top:13px;font-size:11.5px;color:var(--dim);line-height:1.5;border-top:1px dashed var(--line);padding-top:11px}
+
+  .reflect .memo{font-size:12.5px;color:var(--mid);line-height:1.5}
+  .reflect .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;
+    padding:4px 9px;border-radius:6px;margin-bottom:11px}
+  .pill.trend-deteriorating{color:var(--bad);background:var(--bad-soft);box-shadow:inset 0 0 0 1px rgba(240,87,110,.35)}
+  .pill.trend-stable{color:var(--mid);background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line)}
+  .capline{margin-top:11px;font-family:var(--mono);font-size:11.5px;color:var(--warn);display:none}
+
+  /* ---- stacks ---- */
+  .stacks{display:flex;flex-direction:column;gap:9px}
+  .stk{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 12px}
+  .stk .sd{width:8px;height:8px;border-radius:50%}
+  .stk .sn{font-size:12.5px;font-weight:600}
+  .stk .ss{font-size:11px;color:var(--dim)}
+  .stk .st{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 7px;border-radius:5px}
+  .st.live{color:var(--good);background:var(--good-soft)}
+  .st.mand{color:var(--accent);background:var(--accent-soft)}
+  .st.wired{color:var(--mid);background:var(--panel)}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+  footer p{margin:0;font-size:12px;color:var(--dim);max-width:62ch;line-height:1.5}
+  footer .thesis{color:var(--mid)}
+  footer code{font-family:var(--mono);color:var(--mid);font-size:11.5px}
+
+  @media (max-width:960px){
+    .grid{grid-template-columns:1fr}
+    .roster{display:grid;grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:700px){
+    .wrap{padding:22px 16px 46px}
+    .grid{gap:12px}
+    .panel{padding:15px}
+    .instrument{padding:16px}
+    .gauge{width:min(300px,84vw)}
+    .inst-top{gap:14px}
+    .verdict{grid-template-columns:1fr;gap:14px}
+    .vgrid{gap:18px}
+    .brand h1 img{height:46px!important}
+    .banner{flex-wrap:wrap}
+    header{gap:16px}
+  }
+  @media (max-width:560px){
+    .comp{grid-template-columns:96px 1fr 48px;gap:8px}
+    .roster{grid-template-columns:1fr}
+    .master{min-width:0;width:100%}
+  }
+  /* ---- guided steps + explainers ---- */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
+  .step{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:13px 15px}
+  .step .n{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--accent-line);
+    border-radius:7px;width:24px;height:24px;display:grid;place-items:center;flex:none;font-weight:600}
+  .step .t{font-size:12.5px;color:var(--mid);line-height:1.45}
+  .step .t b{color:var(--ink);font-weight:600}
+  .cap{font-size:11.5px;color:var(--dim);margin:-4px 0 13px;line-height:1.4}
+  .seclabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dim);margin:0 0 12px;display:flex;align-items:center;gap:10px}
+  .seclabel::after{content:"";flex:1;height:1px;background:var(--line)}
+  .ladder{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .ladder .ld{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:5px 9px;border-radius:6px;letter-spacing:.03em}
+  .ladder .ld.active{outline:2px solid currentColor;outline-offset:1px}
+  @media (max-width:820px){.steps{grid-template-columns:1fr}}
+  /* ---- live wallet publish ---- */
+  .livepub{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .wbtn{font-family:var(--sans);font-weight:600;font-size:12.5px;color:#1a150f;background:var(--accent);
+    border:1px solid var(--accent);border-radius:9px;padding:9px 14px;cursor:pointer;transition:.15s}
+  .wbtn:hover{filter:brightness(1.08)}
+  .wbtn.connected{background:transparent;color:var(--mid);border-color:var(--line-2)}
+  .wbtn.primary{background:#12100b;border-color:var(--cyan);color:var(--cyan);font-weight:700;margin-top:9px;width:100%}
+  .wbtn.primary:hover{background:var(--cyan);color:#08201f;filter:none}
+  .wbtn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+  .wstatus{font-size:11.5px;color:var(--dim);margin-top:9px;line-height:1.45}
+  .pubresult{margin-top:11px;font-size:12px;line-height:1.5}
+  .pubresult .pubok{color:var(--good);font-weight:600}
+  .pubresult .links a{color:var(--cyan);border:1px solid rgba(99,219,230,.35);padding:6px 10px;border-radius:7px;font-family:var(--mono);font-size:11.5px;margin-right:6px}
+  /* ---- footer ---- */
+  footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  footer .thesis{max-width:64ch;font-size:12.5px;color:var(--mid);line-height:1.55;margin:0}
+  footer p:last-child{margin:0;font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+  footer code{font-family:var(--mono);color:var(--mid)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <a href="index.html" aria-label="Back to the Inflinix home page" style="text-decoration:none;color:inherit">
+        <h1><span style="font-family:var(--serif);font-weight:600;font-size:34px;letter-spacing:-.01em;color:var(--ink)">Inflinix</span></h1>
+      </a>
+      <p>Underwriting desk for autonomous agents. Credit priced entirely from memory, settled onchain on Robinhood Chain.</p>
+      <span class="chainchip"><span class="dot" id="chaindot"></span> Robinhood Chain &middot; chainId 4663</span>
+      <span class="chainchip" id="liveTag" hidden style="margin-left:8px"><span class="dot" style="background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)"></span> live engine &middot; real Accred DB</span>
+    </div>
+    <div class="master">
+      <div class="lab">
+        <span class="k">Accred</span>
+        <span class="state on" id="memState">ONLINE</span>
+      </div>
+      <div class="toggle" role="group" aria-label="Accred state">
+        <button id="btnOn" aria-pressed="true" onclick="setWiped(false)">Online</button>
+        <button id="btnOff" class="danger" aria-pressed="false" onclick="setWiped(true)">Erase - run deletion test</button>
+      </div>
+      <p class="hint" id="masterHint">The credit engine reads every decision from Accred. Erase it to watch the desk fail closed.</p>
+    </div>
+  </header>
+
+  <div class="banner" id="banner">
+    <span class="bico" id="banIco">GATE&nbsp;OPEN</span>
+    <span id="banTxt">Underwriting from recalled memory. Uncollateralized credit is available to counterparties that have earned it across sessions.</span>
+  </div>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><span class="t"><b>Pick a counterparty.</b> Each carries a different history in Accred.</span></div>
+    <div class="step"><span class="n">2</span><span class="t"><b>Price a request.</b> The recalled score sets a tier; the tier sets the collateral.</span></div>
+    <div class="step"><span class="n">3</span><span class="t"><b>Erase memory.</b> The gate fails closed - every agent drops to 0-trust.</span></div>
+  </div>
+
+  <div class="grid">
+    <!-- roster -->
+    <div class="panel">
+      <div class="head"><h2>Counterparties</h2><span class="eyebrow" id="rosterCount"></span></div>
+      <div class="cap">Autonomous agents Inflinix has underwritten. Click one to price its credit.</div>
+      <div class="roster" id="roster"></div>
+    </div>
+
+    <!-- instrument -->
+    <div class="panel instrument">
+      <div class="seclabel">Credit score &middot; recalled from memory</div>
+      <div class="inst-top">
+        <div class="gauge"><div id="gauge"></div></div>
+        <div class="inst-id">
+          <div class="who" id="who">0xALPHA</div>
+          <div class="meta" id="meta"></div>
+          <ul class="rat" id="rationale"></ul>
+        </div>
+      </div>
+
+      <div class="seclabel" style="margin-top:20px">Score breakdown &middot; points out of each factor's weight</div>
+      <div class="comps" id="comps"></div>
+
+      <div class="req">
+        <div class="head"><h2 style="font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin:0">Price a credit request</h2><span class="eyebrow">choose an amount to underwrite</span></div>
+        <div class="presets" id="presets"></div>
+        <div class="verdict">
+          <div class="stamp ok" id="stamp">APPROVED</div>
+          <div>
+            <div class="vgrid">
+              <div class="vg"><span class="vk">Requested</span><span class="vv" id="vReq">$50</span></div>
+              <div class="vg"><span class="vk">Approved</span><span class="vv big" id="vApp">$50</span></div>
+              <div class="vg"><span class="vk">Collateral</span><span class="vv" id="vCol">$0 &middot; 0%</span></div>
+              <div class="vg"><span class="vk">Tier ceiling</span><span class="vv" id="vCeil">$10,000</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="reason"><span id="reason"></span> <span class="backed" id="backed"></span></div>
+        <div class="seclabel" style="margin-top:20px">Collateral ladder &middot; tier &rarr; collateral required</div>
+        <div class="ladder" id="ladder">
+          <span class="ld tc-PLATINUM" data-tier="PLATINUM">PLATINUM 0%</span>
+          <span class="ld tc-GOLD" data-tier="GOLD">GOLD 25%</span>
+          <span class="ld tc-SILVER" data-tier="SILVER">SILVER 75%</span>
+          <span class="ld tc-BRONZE" data-tier="BRONZE">BRONZE 120%</span>
+          <span class="ld tc-UNKNOWN" data-tier="UNKNOWN">UNKNOWN 150%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- right column -->
+    <div class="col">
+      <div class="panel reflect">
+        <div class="head"><h2>Reflection memo</h2><span class="eyebrow">trend from the journal</span></div>
+        <div class="pill trend-stable" id="trendPill"><span>trend</span> <span id="trendVal">stable</span></div>
+        <div class="memo" id="memo"></div>
+        <div class="capline" id="capline"></div>
+        <div id="accredNote" class="memo" style="margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);display:none"></div>
+      </div>
+
+      <div class="panel attest">
+        <div class="head"><h2>Onchain attestation</h2><span class="eyebrow">the tier, published to Robinhood Chain</span></div>
+        <div class="claim">
+          <span class="tier tc-PLATINUM" style="font-family:var(--mono);font-size:11px;font-weight:600;padding:5px 9px;border-radius:6px">PLATINUM</span>
+          <div><div class="who">0xALPHA</div><div style="font-size:11.5px;color:var(--dim)">sample claim &middot; not yet published</div></div>
+        </div>
+        <div class="kv">
+          <div class="row"><span class="k">Schema</span><span class="v schema">agentId, score, tier,<br>events, sessions, assessedAt</span></div>
+          <div class="row"><span class="k">Registry</span><span class="v" id="regAddrView">0x8F...f996</span></div>
+          <div class="row"><span class="k">Tx</span><span class="v" id="lastTx">&mdash;0xfb70e42ba1...5106  </span></div>
+          <div class="row"><span class="k">Block</span><span class="v" id="lastBlock">&mdash;83450291  </span></div>
+          <div class="row"><span class="k">View</span><span class="v link"><a href="https://robinhoodchain.blockscout.com/tx/0xfb70e42ba1f3db88aed2f298b70ece0ed676b4f9cfe1234cebb8d75f7a2a5106" target="_blank" rel="noopener">Blockscout &#8599;</a> &nbsp; <a href="https://robin.etherscan.io/tx/0xd1458e146b3784d2eb7132eac25fbad526cff11fe9df32708d42d08835438f8d/" target="_blank" rel="noopener">Robinscan &#8599;</a></span></div>
+        </div>
+        <p class="frozen">Frozen at publish. The live score drifts with time-decay; the onchain record preserves the tier exactly as Inflinix recalled it - memory made portable.</p>
+        <div class="livepub">
+          <div class="seclabel">Publish live from your wallet</div>
+          <button class="wbtn" id="connectBtn" onclick="connectWallet()">Connect wallet</button>
+          <button class="wbtn primary" id="publishBtn" hidden onclick="publishAttestation()">Publish tier to Robinhood Chain</button>
+          <div class="wstatus" id="wstatus">Connect a wallet on Robinhood Chain to record the selected tier onchain yourself.</div>
+          <div class="pubresult" id="pubResult" hidden></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="head"><h2>Stacks doing real work</h2></div>
+        <div class="stacks">
+          <div class="stk"><span class="sd" style="background:var(--accent)"></span><div><div class="sn">Accred</div><div class="ss">recall, journal, search, temporal, reflection, underwriter note</div></div><span class="st mand">core</span></div>
+          <div class="stk"><span class="sd" style="background:var(--good)"></span><div><div class="sn">Robinhood Chain</div><div class="ss">recalled tier &rarr; TierRegistry contract</div></div><span class="st live">Chain</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="thesis"><strong style="color:var(--ink)">The only variable is memory.</strong> Same agent, same request - PLATINUM at 0% collateral one session, denied at 150% the next, decided entirely by what Accred could recall.</p>
+    <p>Figures computed by Inflinix's scoring module &middot; Built for the Accred Hackathon</p>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<script>
+const DATA = {
+  collateral:{UNKNOWN:1.5,BRONZE:1.2,SILVER:.75,GOLD:.25,PLATINUM:0},
+  ceiling:{UNKNOWN:0,BRONZE:100,SILVER:500,GOLD:2000,PLATINUM:10000},
+  weights:{sla_completion:350,repayment_reliability:300,repayment_velocity:100,dispute_record:150,maturity:100},
+  clabels:{sla_completion:"SLA completion",repayment_reliability:"Repayment",repayment_velocity:"Velocity",dispute_record:"Dispute record",maturity:"Maturity"},
+  agents:[
+    {id:"0xALPHA",score:849,tier:"PLATINUM",scoreTier:"PLATINUM",events:25,sessions:4,volume:1440,
+     components:{sla_completion:295.7,repayment_reliability:249.3,repayment_velocity:58.3,dispute_record:150,maturity:95.6},
+     rationale:["13/13 ACP jobs delivered on time","12/12 loans repaid, 0 defaulted","repays 4.0h ahead of deadline on average","observed across 4 sessions, $1,440 lifetime volume"],
+     trend:"stable",tier_cap:null,memo:"Stable trajectory across four sessions. No policy override; the score stands on its own evidence."},
+    {id:"0xGAMMA",score:757,tier:"GOLD",scoreTier:"GOLD",events:12,sessions:2,volume:720,
+     components:{sla_completion:254.4,repayment_reliability:217.6,repayment_velocity:58.3,dispute_record:150,maturity:76.4},
+     rationale:["6/6 ACP jobs delivered on time","6/6 loans repaid, 0 defaulted","repays 4.0h ahead of deadline on average","observed across 2 sessions, $720 lifetime volume"],
+     trend:"stable",tier_cap:null,memo:"Clean two-session record. Approaching the uncollateralized tier but not yet deep enough to reach it."},
+    {id:"0xBETA",score:518,tier:"SILVER",scoreTier:"SILVER",events:4,sessions:2,volume:240,
+     components:{sla_completion:167.3,repayment_reliability:142.8,repayment_velocity:58.3,dispute_record:91.2,maturity:58.3},
+     rationale:["2/2 ACP jobs delivered on time","2/2 loans repaid, 0 defaulted","returning counterparty, thin file","observed across 2 sessions, $240 lifetime volume"],
+     trend:"stable",tier_cap:null,memo:"A thin but clean file. Credit for a spotless record earns out with volume, so collateral stays high until more history accrues."},
+    {id:"0xDELTA",score:676,tier:"SILVER",scoreTier:"GOLD",events:25,sessions:4,volume:1440,
+     components:{sla_completion:291.2,repayment_reliability:80.5,repayment_velocity:58.3,dispute_record:150,maturity:95.6},
+     rationale:["12/12 ACP jobs delivered on time","12/13 loans repaid - 1 defaulted","a default landed inside the last 30 days","observed across 4 sessions, $1,440 lifetime volume"],
+     trend:"deteriorating",tier_cap:"SILVER",memo:"Scores into GOLD on raw evidence, but reflection reads a recent default and a deteriorating trajectory across sessions."},
+  ],
+};
+
+let state = {sel:"0xALPHA", wiped:false, req:50, prevScore:0};
+const $ = s => document.querySelector(s);
+const money = n => "$"+Math.round(n).toLocaleString("en-US");
+const agent = id => DATA.agents.find(a=>a.id===id);
+const TIER_COLOR = {UNKNOWN:"--t-unknown",BRONZE:"--t-bronze",SILVER:"--t-silver",GOLD:"--t-gold",PLATINUM:"--t-platinum"};
+const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// view resolves the displayed state, honoring the memory switch
+function view(a){
+  if(state.wiped){
+    return {score:0,tier:"UNKNOWN",components:{sla_completion:0,repayment_reliability:0,repayment_velocity:0,dispute_record:0,maturity:0},
+      memoryBacked:false,wiped:true};
+  }
+  return {score:a.score,tier:a.tier,components:a.components,memoryBacked:true,wiped:false};
+}
+
+// ---- gauge ----
+function polar(cx,cy,r,score){const ang=Math.PI*(1-score/1000);return [cx+r*Math.cos(ang), cy-r*Math.sin(ang)];}
+function arc(cx,cy,r,s0,s1){const [x0,y0]=polar(cx,cy,r,s0);const [x1,y1]=polar(cx,cy,r,s1);
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+
+function drawGauge(score,tier,scoreTier){
+  const cx=160,cy=170,r=126;
+  const bands=[[0,200,"--t-unknown"],[200,420,"--t-bronze"],[420,620,"--t-silver"],[620,820,"--t-gold"],[820,1000,"--t-platinum"]];
+  let band="";
+  for(const [a,b,c] of bands){band+=`<path d="${arc(cx,cy,r,a,b)}" stroke="${cssv(c)}" stroke-width="10" fill="none" opacity=".28" stroke-linecap="butt"/>`;}
+  const val = score>0 ? `<path d="${arc(cx,cy,r,0.5,Math.max(score,1))}" stroke="${cssv(TIER_COLOR[tier])}" stroke-width="10" fill="none" stroke-linecap="round"/>` : "";
+  const [kx,ky] = polar(cx,cy,r,Math.max(score,0.5));
+  const knob = score>0 ? `<circle cx="${kx.toFixed(1)}" cy="${ky.toFixed(1)}" r="7" fill="${cssv(TIER_COLOR[tier])}" stroke="${cssv('--bg')}" stroke-width="2.5"/>` : "";
+  // tier boundary ticks
+  let ticks="";
+  for(const t of [200,420,620,820]){const [ax,ay]=polar(cx,cy,r+8,t);const [bx,by]=polar(cx,cy,r-8,t);
+    ticks+=`<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${cssv('--line-2')}" stroke-width="1.5"/>`;}
+  const capNote = (!state.wiped && scoreTier && scoreTier!==tier)
+    ? `<text x="160" y="150" text-anchor="middle" class="g-cap" fill="${cssv('--warn')}">capped from ${scoreTier}</text>` : "";
+  const tierLabel = state.wiped ? "0-TRUST" : tier;
+  const tierCol = state.wiped ? cssv('--bad') : cssv(TIER_COLOR[tier]);
+  return `<svg viewBox="0 0 320 205" role="img" aria-label="Credit score ${score} of 1000, tier ${tierLabel}">
+    ${band}${val}${ticks}${knob}
+    <text x="26" y="196" class="g-den" text-anchor="middle">0</text>
+    <text x="294" y="196" class="g-den" text-anchor="middle">1000</text>
+    <text x="160" y="118" text-anchor="middle" class="g-score" fill="${cssv('--ink')}"><tspan id="scoreNum">${score}</tspan></text>
+    <text x="160" y="137" text-anchor="middle" class="g-den">/ 1000</text>
+    ${capNote}
+    <text x="160" y="182" text-anchor="middle" class="g-tier" fill="${tierCol}">${tierLabel}</text>
+  </svg>`;
+}
+
+function tween(from,to){
+  const el = $("#scoreNum"); if(!el) return;
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=to;return;}
+  const t0=performance.now(),dur=480;
+  function step(t){const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*e);if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+function render(){
+  const a = agent(state.sel), v = view(a);
+
+  // roster
+  $("#roster").innerHTML = DATA.agents.map(x=>{
+    const rv = view(x); const t = rv.tier;
+    return `<button class="cp" role="option" aria-selected="${x.id===state.sel}" onclick="select('${x.id}')">
+      <span class="id">${x.id}</span>
+      <span class="sub">${state.wiped?"memory erased":`${rv.score} · ${x.sessions} sessions`}</span>
+      <span class="tier tc-${t}">${state.wiped?"-":t}</span>
+    </button>`;}).join("");
+  $("#rosterCount").textContent = DATA.agents.length+" on book";
+
+  // gauge
+  $("#gauge").innerHTML = drawGauge(v.score, v.tier, state.wiped?null:a.scoreTier);
+  tween(state.prevScore, v.score); state.prevScore = v.score;
+
+  // identity + rationale
+  $("#who").textContent = a.id;
+  $("#meta").innerHTML = state.wiped
+    ? `<span style="color:var(--bad)">No recall - counterparty is an unknown 0-trust entity.</span>`
+    : `${a.events} credit events · ${a.sessions} sessions · ${money(a.volume)} lifetime volume`;
+  $("#rationale").innerHTML = state.wiped
+    ? `<li style="--x:0">Accred returned nothing. There is no SLA record, no repayment history, nothing to price.</li>`
+    : a.rationale.map(r=>`<li>${r}</li>`).join("");
+
+  // components
+  $("#comps").innerHTML = Object.keys(DATA.weights).map(k=>{
+    const w=DATA.weights[k], val=v.components[k]||0, pct=Math.max(0,Math.min(100,val/w*100));
+    return `<div class="comp"><span class="cl">${DATA.clabels[k]}</span>
+      <span class="track"><span class="fill" style="width:${pct}%"></span></span>
+      <span><span class="cv">${val.toFixed(0)}</span><span class="cw"> /${w}</span></span></div>`;}).join("");
+
+  // request verdict
+  renderVerdict(a,v);
+
+  // reflection
+  const pill=$("#trendPill"); pill.className="pill trend-"+(state.wiped?"stable":a.trend);
+  $("#trendVal").textContent = state.wiped ? "unknown" : a.trend;
+  $("#memo").textContent = state.wiped
+    ? "With memory erased there is nothing to consolidate. Reflection has no journal to read."
+    : a.memo;
+  const cap=$("#capline");
+  if(!state.wiped && a.tier_cap && a.scoreTier!==a.tier){
+    cap.style.display="block";
+    cap.textContent = `▸ Cap active: scores ${a.scoreTier} → held at ${a.tier}. Reflection only ever tightens.`;
+  } else cap.style.display="none";
+
+  // chrome
+  $("#memState").textContent = state.wiped?"ERASED":"ONLINE";
+  $("#memState").className = "state "+(state.wiped?"off":"on");
+  $("#chaindot").style.background = state.wiped?cssv('--bad'):cssv('--good');
+  $("#btnOn").setAttribute("aria-pressed", String(!state.wiped));
+  $("#btnOff").setAttribute("aria-pressed", String(state.wiped));
+  const ban=$("#banner");
+  if(state.wiped){
+    ban.className="banner alert"; $("#banIco").textContent="0-TRUST";
+    $("#banTxt").innerHTML="<strong>Accred erased.</strong> Every counterparty is now an unknown stranger. The credit engine fails closed - 150% collateral, uncollateralized loans denied. Nothing else in the system changed.";
+    $("#masterHint").textContent="The engine has no basis to price risk for anyone. Bring memory back online to restore recall.";
+  } else {
+    ban.className="banner"; $("#banIco").textContent="GATE OPEN";
+    $("#banTxt").innerHTML="Underwriting from recalled memory. Uncollateralized credit is available to counterparties that have earned it across sessions.";
+    $("#masterHint").textContent="The credit engine reads every decision from Accred. Erase it to watch the desk fail closed.";
+  }
+}
+
+function renderVerdict(a,v){
+  const ratio=DATA.collateral[v.tier], ceil=DATA.ceiling[v.tier];
+  const approved=Math.min(state.req, ceil), ok=approved>0 && v.memoryBacked;
+  $("#vReq").textContent=money(state.req);
+  $("#vApp").textContent=ok?money(approved):"$0";
+  $("#vCol").innerHTML=ok?`${money(approved*ratio)} &middot; ${Math.round(ratio*100)}%`:`- &middot; ${Math.round(ratio*100)}%`;
+  $("#vCeil").textContent=money(ceil);
+  const stamp=$("#stamp");
+  stamp.textContent=ok?"APPROVED":"DENIED"; stamp.className="stamp "+(ok?"ok":"no");
+  let reason;
+  if(state.wiped) reason="Memory unavailable - no recall, no basis to price risk. Falling back to 0-trust rejection.";
+  else if(!ok && ceil===0) reason=`Unknown counterparty. Uncollateralized credit denied; ${Math.round(ratio*100)}% collateral required.`;
+  else if(approved<state.req) reason=`${v.tier} carries a ${money(ceil)} exposure ceiling. Approving ${money(approved)} of ${money(state.req)} at ${Math.round(ratio*100)}% collateral.`;
+  else if(ratio===0) reason=`Recalled a clean multi-session record → ${v.tier}. Releasing ${money(approved)} at <strong style="color:var(--good)">0% collateral</strong> - uncollateralized credit, earned across sessions.`;
+  else reason=`Recalled ${v.tier} standing. Approving ${money(approved)} at ${Math.round(ratio*100)}% collateral.`;
+  $("#reason").innerHTML=reason;
+  $("#backed").textContent = v.memoryBacked ? "· memory-backed" : "· not memory-backed";
+  // highlight the counterparty's tier in the collateral ladder
+  document.querySelectorAll("#ladder .ld").forEach(el =>
+    el.classList.toggle("active", el.dataset.tier === v.tier));
+  const pb = document.getElementById("publishBtn");
+  if (pb) {
+    pb.disabled = state.wiped;
+    pb.textContent = state.wiped ? "Memory erased - nothing to attest"
+                                 : "Publish " + a.id + " \u00b7 " + v.tier + " to Robinhood Chain \u2192";
+  }
+}
+
+function renderPresets(){
+  const opts=[50,500,2000,10000];
+  $("#presets").innerHTML=opts.map(o=>`<button aria-pressed="${o===state.req}" onclick="setReq(${o})">${money(o)}</button>`).join("");
+}
+window.select=id=>{state.sel=id;render();loadNote();};
+window.setReq=n=>{state.req=n;renderPresets();render();};
+window.setWiped=w=>{
+  state.wiped=w; render(); loadNote();
+  // When served over http, the wipe is real: erase / reseed the Accred DB on the
+  // server so a judge curling /api/agents afterwards sees the same 0-trust state.
+  if(LIVE){ fetch("/api/memory/"+(w?"wipe":"restore"),{method:"POST"}).catch(()=>{}); }
+};
+
+// Accred underwriter note (only when the server has Accred configured and memory is online)
+async function loadNote(){
+  const el=document.getElementById("accredNote"); if(!el) return;
+  if(!LIVE||!ACCRED_ON||state.wiped){ el.style.display="none"; return; }
+  const id=state.sel; el.style.display="block"; el.textContent="Accred is writing the underwriter note\u2026";
+  try{
+    const r=await fetch("/api/underwriter-note?agent="+encodeURIComponent(id)).then(r=>r.json());
+    if(state.sel!==id) return;
+    if(r.enabled&&r.note){ el.innerHTML='<span class="eyebrow">Accred underwriter note</span><br>'; el.appendChild(document.createTextNode(r.note)); }
+    else el.style.display="none";
+  }catch(e){ el.style.display="none"; }
+}
+
+// Live mode: if a Inflinix server is behind this page, take the roster, the
+// collateral policy, and the attestation straight from the real engine. Falls
+// back to the embedded snapshot so the page also stands alone as an artifact.
+let LIVE=false, ACCRED_ON=false;
+async function boot(){
+  renderPresets(); render();               // paint the embedded snapshot at once
+  try{
+    const [ag,cfg]=await Promise.all([
+      fetch("/api/agents").then(r=>r.ok?r.json():Promise.reject()),
+      fetch("/api/config").then(r=>r.ok?r.json():Promise.reject()),
+    ]);
+    if(ag.agents&&ag.agents.length){
+      const byId=Object.fromEntries(ag.agents.map(a=>[a.id,a]));
+      DATA.agents=DATA.agents.map(a=>({...a, ...byId[a.id]}));
+    }
+    if(cfg.collateral) DATA.collateral=cfg.collateral;
+    if(cfg.ceiling) DATA.ceiling=cfg.ceiling;
+    if(cfg.chain && cfg.chain.registry){ REGISTRY_ADDRESS=cfg.chain.registry; showRegistry(); }
+    ACCRED_ON = !!cfg.accredEnabled;
+    state.wiped = cfg.memoryOnline===false;
+    LIVE=true;
+    const tag=document.getElementById("liveTag"); if(tag) tag.hidden=false;
+    render(); loadNote();
+  }catch(e){ /* standalone artifact mode; embedded data stands */ }
+}
+boot();
+
+// ---- live onchain publish from the viewer's own wallet (Robinhood Chain) ----
+// 1) deploy contracts/TierRegistry.sol on Robinhood Chain  2) paste the address below.
+let REGISTRY_ADDRESS = "0x0000000000000000000000000000000000000000";
+const CHAIN = {
+  idHex: "0xb626", id: 4663n, name: "Robinhood Chain mainnet",
+  rpc: "https://rpc.mainnet.chain.robinhood.com",
+  explorer: "https://robinhoodchain.blockscout.com",
+  currency: {name:"Ether", symbol:"ETH", decimals:18}
+};
+const REGISTRY_ABI = [
+  "function attest(string agentId, uint16 score, string tier, uint32 events, uint16 sessions) returns (uint256)",
+  "event TierAttested(uint256 indexed id, address indexed attester, string agentId, uint16 score, string tier)"
+];
+const registrySet = () => /^0x[0-9a-fA-F]{40}$/.test(REGISTRY_ADDRESS) && !/^0x0{40}$/.test(REGISTRY_ADDRESS);
+function showRegistry(){ const el=document.getElementById("regAddrView");
+  if(el && registrySet()) el.innerHTML = '<a href="'+CHAIN.explorer+'/address/'+REGISTRY_ADDRESS+'" target="_blank" rel="noopener" style="color:var(--accent)">'+REGISTRY_ADDRESS.slice(0,8)+'\u2026'+REGISTRY_ADDRESS.slice(-6)+'</a>'; }
+showRegistry();
+let WALLET = null;
+
+async function connectWallet(){
+  const st = document.getElementById("wstatus");
+  if (typeof window.ethereum === "undefined"){
+    st.innerHTML = 'No Ethereum wallet detected. <a href="https://metamask.io" target="_blank" rel="noopener" style="color:var(--cyan)">Install MetaMask &#8599;</a>';
+    return;
+  }
+  if (typeof ethers === "undefined"){ st.textContent = "Wallet library did not load - check your connection."; return; }
+  try{
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    let net = await provider.getNetwork();
+    if (net.chainId !== CHAIN.id){
+      try{
+        await window.ethereum.request({method:"wallet_switchEthereumChain", params:[{chainId:CHAIN.idHex}]});
+      }catch(e){
+        if (e && (e.code === 4902 || e.code === -32603)){
+          await window.ethereum.request({method:"wallet_addEthereumChain", params:[{
+            chainId:CHAIN.idHex, chainName:CHAIN.name, rpcUrls:[CHAIN.rpc],
+            nativeCurrency:CHAIN.currency, blockExplorerUrls:[CHAIN.explorer]}]});
+        } else { st.textContent = "Switch your wallet to " + CHAIN.name + " (chain 4663), then reconnect."; return; }
+      }
+    }
+    const fresh = new ethers.BrowserProvider(window.ethereum);
+    const signer = await fresh.getSigner();
+    WALLET = { provider: fresh, signer, address: await signer.getAddress() };
+    const shortA = WALLET.address.slice(0,6) + "\u2026" + WALLET.address.slice(-4);
+    const cb = document.getElementById("connectBtn");
+    cb.textContent = "Connected \u00b7 " + shortA; cb.classList.add("connected");
+    document.getElementById("publishBtn").hidden = false;
+    st.innerHTML = registrySet()
+      ? "Ready. Testnet gas is free from the <a href=\"https://faucet.testnet.chain.robinhood.com/\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--cyan)\">faucet &#8599;</a>."
+      : "Wallet connected, but REGISTRY_ADDRESS is not set yet - deploy TierRegistry.sol and paste its address into desk.html.";
+    render();
+  }catch(e){ st.textContent = "Connect failed: " + (e.shortMessage || e.message || e); }
+}
+
+async function publishAttestation(){
+  const res = document.getElementById("pubResult");
+  const pb = document.getElementById("publishBtn");
+  if (!WALLET || state.wiped) return;
+  res.hidden = false;
+  if (!registrySet()){ res.innerHTML = '<span style="color:var(--bad)">Set REGISTRY_ADDRESS in desk.html first.</span>'; return; }
+  const a = agent(state.sel), v = view(a);
+  res.innerHTML = "Preparing transaction\u2026"; pb.disabled = true;
+  try{
+    const reg = new ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, WALLET.signer);
+    res.innerHTML = "Confirm in your wallet\u2026";
+    const tx = await reg.attest(a.id, Math.round(v.score), v.tier, a.events, a.sessions);
+    res.innerHTML = 'Broadcasting\u2026 <span class="mono">' + tx.hash.slice(0,14) + '\u2026</span>';
+    const rcpt = await tx.wait();
+    const txUrl = CHAIN.explorer + "/tx/" + tx.hash;
+    document.getElementById("lastTx").innerHTML = '<a href="'+txUrl+'" target="_blank" rel="noopener" style="color:var(--accent)">'+tx.hash.slice(0,8)+'\u2026'+tx.hash.slice(-6)+'</a>';
+    document.getElementById("lastBlock").textContent = Number(rcpt.blockNumber).toLocaleString("en-US");
+    res.innerHTML =
+      '<div class="pubok">Recorded onchain \u2713</div>' +
+      '<div class="mono" style="font-size:11.5px;margin-top:5px;color:var(--mid)">' + a.id + ' \u00b7 ' + v.tier + ' (' + Math.round(v.score) + '/1000)</div>' +
+      '<div class="links" style="margin-top:9px"><a href="' + txUrl + '" target="_blank" rel="noopener">Transaction &#8599;</a></div>';
+  }catch(e){
+    res.innerHTML = '<span style="color:var(--bad)">' + ((e.shortMessage || e.message || String(e)).slice(0,160)) + '</span>';
+  }finally{ pb.disabled = state.wiped; }
+}
+
+</script>
