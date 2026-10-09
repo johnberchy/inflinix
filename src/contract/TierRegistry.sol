@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-/// @notice Records the credit tier Meritor recalled for an agent. Built for the Accred Hackathon.
+/// @notice Records the credit tier Inflinix recalled for an agent. Built for the Accred Hackathon.
 contract TierRegistry {
     struct Record {
         address attester;
