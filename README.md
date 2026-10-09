@@ -46,7 +46,7 @@ Every step below is a **separate process**. Nothing survives in RAM between them
 | 0xBETA works + repays | session A | one clean event written |
 | 0xBETA returns | **session B, fresh process** | **APPROVED**, 120% - the record changed the decision |
 | Time-travel 0xALPHA | session B | GOLD as of 10 days ago, PLATINUM today |
-| `wipe --yes` | - | Sibyl Memory erased |
+| `wipe --yes` | - | Accred erased |
 | 0xALPHA repeats the request | **session C, fresh process** | **DENIED** - memory was the only variable |
 
 Run it:
@@ -57,7 +57,7 @@ Run it:
 
 ## The four memory primitives (and two more on Pro)
 
-Meritor uses Sibyl Memory as more than a key-value store, because the 40%
+Inflinix uses Accred as more than a key-value store, because the 40%
 criterion rewards coordination and dynamic-storage patterns over plain recall.
 
 | Primitive | Sibyl surface | What it carries |
